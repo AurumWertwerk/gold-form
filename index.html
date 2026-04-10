@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Gold Sparplan</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+<h2>Gold Sparplan starten</h2>
+
+<form id="form">
+  <input type="text" id="vorname" placeholder="Vorname" required><br>
+  <input type="text" id="nachname" placeholder="Nachname" required><br>
+  <input type="text" id="adresse" placeholder="Adresse" required><br>
+  <input type="text" id="telefon" placeholder="Telefon (optional)"><br>
+  <button type="submit">Absenden</button>
+</form>
+
+<div id="result" style="display:none;">
+  <h3>Deine ID:</h3>
+  <p id="kundenId"></p>
+
+  <h3>Zahlung einrichten (QR-Code scannen):</h3>
+  <div id="qrcode"></div>
+</div>
+
+<script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbwvbpQ64REMM6m7WapWng-2LTSqhsZSZst42dbX8xlN9V8M0eNvLcNOpi0R_QzWDQ_iAQ/exec";
+
+function generateID() {
+  return "GOLD-" + Date.now();
+}
+
+function generateSEPA(name, iban, bic, amount, reference) {
+  return `BCD\n001\n1\nSCT\n${bic}\n${name}\n${iban}\nEUR${amount}\n\n${reference}`;
+}
+
+document.getElementById("form").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const id = generateID();
+  const data = {
+    vorname: document.getElementById("vorname").value,
+    nachname: document.getElementById("nachname").value,
+    adresse: document.getElementById("adresse").value,
+    telefon: document.getElementById("telefon").value,
+    id: id
+  };
+
+  fetch(scriptURL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  })
+  .then(() => {
+    document.getElementById("form").style.display = "none";
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("kundenId").innerText = id;
+
+    const sepa = generateSEPA(
+      "Max Mustermann",
+      "DE12345678901234567890",
+      "TESTDEFFXXX",
+      "100",
+      id
+    );
+
+    new QRCode(document.getElementById("qrcode"), sepa);
+  });
+});
+</script>
+
+</body>
+</html>
