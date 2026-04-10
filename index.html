@@ -165,10 +165,9 @@ const data = {
 
 fetch(scriptURL,{
   method:"POST",
-  headers:{
-    "Content-Type":"application/json"
-  },
-  body:JSON.stringify(data)
+  mode: "no-cors",
+  body: JSON.stringify(data)
+})
 })
 .then(()=>{
   document.getElementById("loader").style.display="none";
