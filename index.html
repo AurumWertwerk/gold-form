@@ -63,7 +63,7 @@
 </div>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbXXXXXXXXXXXX/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbxLPl5mMATaW1RDBeghbD7DE8xFwkXFsUo4c0yOLul2JCLk5Fl-lIMl8oHjXXHlVvCWrw/exec";
 let isSubmitting = false;
 
 function generateID() {
@@ -102,8 +102,12 @@ document.getElementById("form").addEventListener("submit", function(e) {
   };
 
   fetch(scriptURL, {
-    method: "POST",
-    body: JSON.stringify(data)
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(data)
+})
   })
   .then(() => {
     document.getElementById("form").style.display = "none";
