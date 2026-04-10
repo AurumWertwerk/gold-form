@@ -165,8 +165,26 @@ const data = {
 
 fetch(scriptURL,{
   method:"POST",
-  mode: "no-cors",
+  mode:"no-cors",
   body: JSON.stringify(data)
+});
+
+// 👉 WICHTIG: DIREKT danach UI anzeigen
+
+document.getElementById("loader").style.display="none";
+document.getElementById("result").style.display="block";
+
+document.getElementById("kundenId").innerText = id;
+document.getElementById("vwz").innerText = id;
+
+const sepa = generateSEPA(
+  "M&M Marketing Kft",
+  "HU94120111480189343900200001",
+  "UBRTHUHB",
+  id
+);
+
+new QRCode(document.getElementById("qrcode"), sepa);
 })
 })
 .then(()=>{
