@@ -163,33 +163,18 @@ const data = {
   id: id
 };
 
-fetch(scriptURL,{
-  method:"POST",
-  mode:"no-cors",
+fetch(scriptURL, {
+  method: "POST",
+  mode: "no-cors",
   body: JSON.stringify(data)
 });
 
-// 👉 WICHTIG: DIREKT danach UI anzeigen
+// UI SOFORT anzeigen (nicht warten!)
 
-document.getElementById("loader").style.display="none";
-document.getElementById("result").style.display="block";
+setTimeout(() => {
 
-document.getElementById("kundenId").innerText = id;
-document.getElementById("vwz").innerText = id;
-
-const sepa = generateSEPA(
-  "M&M Marketing Kft",
-  "HU94120111480189343900200001",
-  "UBRTHUHB",
-  id
-);
-
-new QRCode(document.getElementById("qrcode"), sepa);
-})
-})
-.then(()=>{
-  document.getElementById("loader").style.display="none";
-  document.getElementById("result").style.display="block";
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("result").style.display = "block";
 
   document.getElementById("kundenId").innerText = id;
   document.getElementById("vwz").innerText = id;
@@ -201,11 +186,11 @@ new QRCode(document.getElementById("qrcode"), sepa);
     id
   );
 
+  document.getElementById("qrcode").innerHTML = "";
   new QRCode(document.getElementById("qrcode"), sepa);
-})
-.catch(()=>{
-  alert("Fehler beim Senden");
-});
+
+}, 1200); // kleine Verzögerung für UX
+
 });
 
 function copyIBAN(){
