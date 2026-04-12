@@ -17,17 +17,14 @@ body {
   margin: auto;
   background: white;
   padding: 20px;
-  box-sizing: border-box;
 }
 
 h2 {
   font-size: 22px;
-  text-align: center;
 }
 
 p {
   font-size: 15px;
-  text-align: center;
 }
 
 input {
@@ -35,21 +32,20 @@ input {
   padding: 12px;
   margin: 6px 0;
   font-size: 16px;
-  box-sizing: border-box;
 }
 
 button {
-  width: 100%;
   padding: 14px;
-  margin-top: 10px;
+  width: 100%;
+  font-size: 16px;
   background: black;
   color: white;
   border: none;
-  font-size: 16px;
+  margin-top: 8px;
 }
 
 .copyBtn {
-  background: #222;
+  background: #333;
 }
 
 #loader {
@@ -64,18 +60,19 @@ button {
   width: 40px;
   height: 40px;
   animation: spin 1s linear infinite;
-  margin: 20px auto;
+  margin: auto;
 }
 
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
 
-@media (max-width: 480px) {
-  .container { padding: 15px; }
-  h2 { font-size: 20px; }
-  p { font-size: 14px; }
+.idBox {
+  font-weight: bold;
+  font-size: 18px;
+  margin: 10px 0;
 }
+
 </style>
 </head>
 
@@ -111,20 +108,33 @@ Ich bestätige die Richtigkeit meiner Angaben
 
 <div id="result" style="display:none;">
 
-<h3>Dein nächster Schritt</h3>
-
-<button class="copyBtn" onclick="copyIBAN()">1. IBAN kopieren</button>
-<button class="copyBtn" onclick="copyName()">2. Empfänger kopieren</button>
-<button class="copyBtn" onclick="copyID()">3. Verwendungszweck (ID) kopieren</button>
+<h3>Deine persönliche ID</h3>
+<div class="idBox" id="kundenId"></div>
 
 <h3>Anleitung</h3>
 <p>
-1. Öffne deine Banking-App<br>
-2. Wähle „Überweisung“ oder „Dauerauftrag“<br>
-3. IBAN kopieren und einfügen<br>
+1. Banking-App öffnen<br>
+2. Dauerauftrag oder Überweisung auswählen<br>
+3. IBAN kopieren und in die Banking-App einfügen<br>
 4. Zahlungsempfänger kopieren und einfügen<br>
-5. ID kopieren und als Verwendungszweck einsetzen
+5. ID kopieren und als Verwendungszweck setzen
 </p>
+
+<h3>Überweisungsdaten</h3>
+
+<p><strong>IBAN</strong></p>
+<p id="iban">HU94120111480189343900200001</p>
+<button class="copyBtn" onclick="copyIBAN()">IBAN kopieren</button>
+
+<p><strong>Empfänger</strong></p>
+<p id="empfaenger">M&M Marketing Kft</p>
+<button class="copyBtn" onclick="copyEmpfaenger()">Empfänger kopieren</button>
+
+<p><strong>Verwendungszweck (ID)</strong></p>
+<p id="vwz"></p>
+<button class="copyBtn" onclick="copyID()">ID kopieren</button>
+
+<p>Betrag frei wählbar</p>
 
 </div>
 
@@ -135,7 +145,6 @@ Ich bestätige die Richtigkeit meiner Angaben
 const scriptURL = "https://script.google.com/macros/s/AKfycbxgLEuiVpStD0TcPxuRY7wuNiv7V8yU2XkAaeeesCAiWKEgSXGc3AmIfBZzl5g4M-g3hg/exec";
 
 let isSubmitting = false;
-let currentID = "";
 
 function generateID() {
   const d = new Date();
@@ -156,7 +165,6 @@ document.getElementById("form").style.display="none";
 document.getElementById("loader").style.display="block";
 
 const id = generateID();
-currentID = id;
 
 const data = {
   vorname: document.getElementById("vorname").value,
@@ -168,29 +176,33 @@ const data = {
   id: id
 };
 
-fetch(scriptURL,{
-  method:"POST",
-  mode:"no-cors",
+fetch(scriptURL, {
+  method: "POST",
+  mode: "no-cors",
   body: JSON.stringify(data)
 });
 
 setTimeout(() => {
   document.getElementById("loader").style.display="none";
   document.getElementById("result").style.display="block";
-}, 1200);
+
+  document.getElementById("kundenId").innerText = id;
+  document.getElementById("vwz").innerText = id;
+
+}, 1000);
 
 });
 
 function copyIBAN(){
-  navigator.clipboard.writeText("HU94120111480189343900200001");
+navigator.clipboard.writeText(document.getElementById("iban").innerText);
 }
 
-function copyName(){
-  navigator.clipboard.writeText("M&M Marketing Kft");
+function copyEmpfaenger(){
+navigator.clipboard.writeText(document.getElementById("empfaenger").innerText);
 }
 
 function copyID(){
-  navigator.clipboard.writeText(currentID);
+navigator.clipboard.writeText(document.getElementById("vwz").innerText);
 }
 
 </script>
