@@ -182,7 +182,7 @@ Keine Weitergabe. Kein Verkauf. Deine Daten dienen ausschließlich deinem Goldsp
 
 <script>
 
-const scriptURL = "https://script.google.com/macros/s/AKfycbyyinRCm8OoRe-QB-coGZcWg4UtEvZVyekhNsMeVeUNG-Txs8cVerYprUGSulW1gbLeSg/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbx19uJ3Mjn_vWVvW8oG1PA7oG56kc_wIPAsgBszebEo7uoT2T5C_xXK5S3OtLEKttE3VQ/exec";
 
 let isSubmitting = false;
 const startTime = Date.now();
@@ -233,8 +233,17 @@ const data = {
 
 fetch(scriptURL, {
   method: "POST",
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json"
+  },
   body: JSON.stringify(data)
+})
+.then(res => res.json())
+.then(res => {
+  console.log(res);
+})
+.catch(err => {
+  console.error(err);
 });
 
 setTimeout(() => {
