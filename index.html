@@ -26,14 +26,8 @@ body {
   margin-bottom: 20px;
 }
 
-h1 {
-  font-size: 24px;
-}
-
-h2 {
-  font-size: 18px;
-  margin-top: 20px;
-}
+h1 { font-size: 24px; }
+h2 { font-size: 18px; margin-top: 20px; }
 
 .highlight {
   color: #d4af37;
@@ -91,6 +85,12 @@ button {
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
+
+.privacy {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 10px;
+}
 </style>
 </head>
 
@@ -109,6 +109,7 @@ button {
 <h2>Deine Daten</h2>
 
 <form id="form">
+
 <input type="text" id="vorname" placeholder="Vorname" required>
 <input type="text" id="nachname" placeholder="Nachname" required>
 <input type="text" id="strasse" placeholder="Straße" required>
@@ -116,12 +117,20 @@ button {
 <input type="text" id="stadt" placeholder="Stadt" required>
 <input type="text" id="telefon" placeholder="Telefon (optional)">
 
+<!-- Honeypot -->
+<input type="text" id="website" style="display:none">
+
 <label>
 <input type="checkbox" required>
 Ich bestätige die Richtigkeit meiner Angaben
 </label>
 
 <button>Jetzt absichern</button>
+
+<p class="privacy">
+Keine Weitergabe. Kein Verkauf. Deine Daten dienen ausschließlich deinem Goldsparplan.
+</p>
+
 </form>
 </div>
 
@@ -176,20 +185,34 @@ Ich bestätige die Richtigkeit meiner Angaben
 const scriptURL = "https://script.google.com/macros/s/AKfycbzZOeVzuBenAY1HRG5zwfqYJGfMDvC7DAlnKIdDrMYANSG0PIc2jMyip2mYsV8iZemA/exec";
 
 let isSubmitting = false;
+const startTime = Date.now();
 
+/* Neue ID: MMSS + Zufallszahl */
 function generateID() {
   const d = new Date();
-  return d.getFullYear() +
-    String(d.getMonth()+1).padStart(2,'0') +
-    String(d.getDate()).padStart(2,'0') +
-    String(d.getHours()).padStart(2,'0') +
-    String(d.getMinutes()).padStart(2,'0');
+  const MM = String(d.getMinutes()).padStart(2,'0');
+  const SS = String(d.getSeconds()).padStart(2,'0');
+  const rand = Math.floor(Math.random() * 90 + 10); // 2-stellig
+  return MM + SS + rand;
 }
 
 document.getElementById("form").addEventListener("submit", function(e){
 e.preventDefault();
 
 if(isSubmitting) return;
+
+/* Honeypot */
+if(document.getElementById("website").value){
+  return;
+}
+
+/* Zeitprüfung */
+const now = Date.now();
+if(now - startTime < 3000){
+  alert("Bitte Formular normal ausfüllen");
+  return;
+}
+
 isSubmitting = true;
 
 document.getElementById("form").style.display="none";
@@ -204,12 +227,13 @@ const data = {
   plz: document.getElementById("plz").value,
   stadt: document.getElementById("stadt").value,
   telefon: document.getElementById("telefon").value,
-  id: id
+  id: id,
+  loadTime: startTime
 };
 
 fetch(scriptURL, {
   method: "POST",
-  mode: "no-cors",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify(data)
 });
 
