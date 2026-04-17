@@ -23,15 +23,10 @@ body {
   max-width: 400px;
 }
 
-h2 {
-  margin-bottom: 10px;
-}
-
 .top-text {
   font-size: 14px;
   color: #cbd5f5;
   margin-bottom: 20px;
-  line-height: 1.4;
 }
 
 input {
@@ -64,7 +59,6 @@ button:hover {
 
 #status {
   margin-top: 10px;
-  font-size: 14px;
 }
 </style>
 </head>
@@ -74,13 +68,15 @@ button:hover {
 <div class="container">
   <h2>Gold Sparplan starten</h2>
 
-  <!-- TEXT OBEN (wieder drin) -->
   <div class="top-text">
-    Sichere dein Vermögen außerhalb des Systems.  
+    Sichere dein Vermögen außerhalb des Systems.<br>
     Starte jetzt deinen persönlichen Goldsparplan.
   </div>
 
-  <form id="form">
+  <!-- FORM DIREKT AN GOOGLE -->
+  <form id="form" method="POST"
+    action="https://script.google.com/macros/s/AKfycbylRwi9HksNVEtHcOljqc9yHvB52LJfj65v-n4q7jyG0zn-cq4wiUdRDFotBjoh1UuJgw/exec"
+    target="hidden_iframe">
 
     <input type="text" name="vorname" placeholder="Vorname" required>
     <input type="text" name="nachname" placeholder="Nachname" required>
@@ -92,9 +88,23 @@ button:hover {
     <!-- Honeypot -->
     <input type="text" name="website" style="display:none">
 
+    <!-- ID -->
+    <input type="hidden" name="id" id="id">
+
+    <!-- LoadTime -->
+    <input type="hidden" name="loadTime" id="loadTime">
+
+    <!-- Checkbox -->
+    <label style="font-size:12px;">
+      <input type="checkbox" required>
+      Ich bestätige, dass meine Angaben korrekt sind
+    </label>
+
     <button type="submit">Absenden</button>
 
   </form>
+
+  <iframe name="hidden_iframe" style="display:none;"></iframe>
 
   <div id="status"></div>
 
@@ -104,11 +114,9 @@ button:hover {
 </div>
 
 <script>
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbylRwi9HksNVEtHcOljqc9yHvB52LJfj65v-n4q7jyG0zn-cq4wiUdRDFotBjoh1UuJgw/exec";
-
 let lastSubmit = 0;
-const loadTime = Date.now();
 
+// ID Generator
 function generateID() {
   const now = new Date();
   const mm = String(now.getMinutes()).padStart(2, '0');
@@ -117,59 +125,23 @@ function generateID() {
   return mm + ss + "-" + rand;
 }
 
-document.getElementById("form").addEventListener("submit", async function(e) {
-  e.preventDefault();
+// Set hidden values
+document.getElementById("id").value = generateID();
+document.getElementById("loadTime").value = Date.now();
 
+// Submit Handling
+document.getElementById("form").addEventListener("submit", function(e) {
   const status = document.getElementById("status");
 
   const now = Date.now();
   if (now - lastSubmit < 5000) {
+    e.preventDefault();
     status.innerText = "Bitte kurz warten...";
     return;
   }
+
   lastSubmit = now;
-
-  const formData = new FormData(this);
-
-  // Honeypot
-  if (formData.get("website")) {
-    status.innerText = "Fehler";
-    return;
-  }
-
-  const data = {
-    vorname: formData.get("vorname"),
-    nachname: formData.get("nachname"),
-    strasse: formData.get("strasse"),
-    plz: formData.get("plz"),
-    stadt: formData.get("stadt"),
-    telefon: formData.get("telefon"),
-    id: generateID(),
-    loadTime: loadTime
-  };
-
-  status.innerText = "Wird gesendet...";
-
-  try {
-    const res = await fetch(WEBAPP_URL, {
-      method: "POST",
-      body: new URLSearchParams(data)
-    });
-
-    const text = await res.text();
-
-    if (text === "OK") {
-      status.innerText = "Erfolgreich gesendet";
-      this.reset();
-    } else {
-      status.innerText = "Server antwortet nicht korrekt";
-      console.log(text);
-    }
-
-  } catch (err) {
-    status.innerText = "Verbindung fehlgeschlagen";
-    console.error(err);
-  }
+  status.innerText = "Gesendet...";
 });
 </script>
 
