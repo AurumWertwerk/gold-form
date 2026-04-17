@@ -8,88 +8,52 @@
 <style>
 body {
   font-family: Arial;
-  background: #0f0f0f;
+  background: #0f172a;
   color: white;
-  margin: 0;
+  display: flex;
+  justify-content: center;
+  padding: 30px;
 }
 
 .container {
-  max-width: 500px;
-  margin: auto;
-  padding: 20px;
-}
-
-.card {
-  background: #1a1a1a;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-h1 { font-size: 24px; }
-h2 { font-size: 18px; margin-top: 20px; }
-
-.highlight {
-  color: #d4af37;
-  font-weight: bold;
+  background: #1e293b;
+  padding: 25px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
 }
 
 input {
   width: 100%;
-  padding: 12px;
-  margin: 6px 0;
-  font-size: 16px;
+  padding: 10px;
+  margin-bottom: 12px;
   border-radius: 6px;
   border: none;
 }
 
 button {
-  padding: 14px;
   width: 100%;
-  font-size: 16px;
-  background: #d4af37;
-  color: black;
+  padding: 12px;
+  background: #facc15;
   border: none;
-  margin-top: 10px;
   border-radius: 6px;
   font-weight: bold;
+  cursor: pointer;
 }
 
-.copyBtn {
-  background: #333;
-  color: white;
+button:hover {
+  background: #eab308;
 }
 
-.idBox {
-  font-size: 20px;
-  font-weight: bold;
-  color: #d4af37;
-  margin: 10px 0;
-}
-
-#loader {
-  display: none;
-  text-align: center;
-}
-
-.spinner {
-  border: 4px solid #333;
-  border-top: 4px solid #d4af37;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: auto;
-}
-
-@keyframes spin {
-  100% { transform: rotate(360deg); }
-}
-
-.privacy {
+.small {
   font-size: 12px;
-  opacity: 0.7;
+  color: #94a3b8;
   margin-top: 10px;
+}
+
+#status {
+  margin-top: 10px;
+  font-size: 14px;
 }
 </style>
 </head>
@@ -97,121 +61,92 @@ button {
 <body>
 
 <div class="container">
+  <h2>Gold Sparplan starten</h2>
 
-<div class="card">
-<h1>Dein Geld verliert täglich an Wert</h1>
-<p>Inflation, Enteignung, Systemrisiken.</p>
-<p class="highlight">Du musst selbst handeln.</p>
-<p>Starte jetzt deinen physischen Gold-Sparplan – in unter 60 Sekunden.</p>
-</div>
+  <form id="form">
 
-<div class="card">
-<h2>Deine Daten</h2>
+    <input type="text" name="vorname" placeholder="Vorname" required>
+    <input type="text" name="nachname" placeholder="Nachname" required>
+    <input type="text" name="strasse" placeholder="Straße" required>
+    <input type="text" name="plz" placeholder="PLZ" required>
+    <input type="text" name="stadt" placeholder="Stadt" required>
+    <input type="text" name="telefon" placeholder="Telefon" required>
 
-<form id="form">
+    <!-- Honeypot -->
+    <input type="text" name="website" style="display:none">
 
-<input type="text" id="vorname" placeholder="Vorname" required>
-<input type="text" id="nachname" placeholder="Nachname" required>
-<input type="text" id="strasse" placeholder="Straße" required>
-<input type="text" id="plz" placeholder="PLZ" required>
-<input type="text" id="stadt" placeholder="Stadt" required>
-<input type="text" id="telefon" placeholder="Telefon (optional)">
+    <button type="submit">Absenden</button>
 
-<input type="text" id="website" style="display:none">
+  </form>
 
-<label>
-<input type="checkbox" required>
-Ich bestätige die Richtigkeit meiner Angaben
-</label>
+  <div id="status"></div>
 
-<button>Jetzt absichern</button>
-
-<p class="privacy">
-Keine Weitergabe. Kein Verkauf. Deine Daten dienen ausschließlich deinem Goldsparplan.
-</p>
-
-</form>
-</div>
-
-<div id="loader" class="card">
-<div class="spinner"></div>
-<p>Verarbeitung läuft...</p>
-</div>
-
-<div id="result" style="display:none;">
-
-<div class="card">
-<h2>Deine persönliche ID</h2>
-<div class="idBox" id="kundenId"></div>
-</div>
-
-</div>
-
+  <div class="small">
+    Keine Weitergabe. Kein Verkauf. Deine Daten dienen ausschließlich deinem Goldsparplan.
+  </div>
 </div>
 
 <script>
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbylRwi9HksNVEtHcOljqc9yHvB52LJfj65v-n4q7jyG0zn-cq4wiUdRDFotBjoh1UuJgw/exec";
 
-const scriptURL = "https://script.google.com/macros/s/AKfycby5e18FM1qNU8NxmIluWY82Tjv4TcUNJQd4JsLD1E9s8Ehq_KlxEacXytfYYZyBzkWK/exec";
-
-let isSubmitting = false;
-const startTime = Date.now();
+let lastSubmit = 0;
+const loadTime = Date.now();
 
 function generateID() {
-  const d = new Date();
-  const MM = String(d.getMinutes()).padStart(2,'0');
-  const SS = String(d.getSeconds()).padStart(2,'0');
-  const rand = Math.floor(Math.random() * 90 + 10);
-  return MM + SS + rand;
+  const now = new Date();
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return mm + ss + "-" + rand;
 }
 
-document.getElementById("form").addEventListener("submit", function(e){
-e.preventDefault();
+document.getElementById("form").addEventListener("submit", async function(e) {
+  e.preventDefault();
 
-if(isSubmitting) return;
+  const status = document.getElementById("status");
 
-/* Honeypot */
-if(document.getElementById("website").value){
-  return;
-}
+  // Frontend Rate Limit
+  const now = Date.now();
+  if (now - lastSubmit < 5000) {
+    status.innerText = "Bitte kurz warten...";
+    return;
+  }
+  lastSubmit = now;
 
-/* Zeitprüfung */
-if(Date.now() - startTime < 3000){
-  alert("Bitte Formular normal ausfüllen");
-  return;
-}
+  const formData = new FormData(this);
 
-isSubmitting = true;
+  // Honeypot check
+  if (formData.get("website")) {
+    status.innerText = "Fehler";
+    return;
+  }
 
-document.getElementById("form").style.display="none";
-document.getElementById("loader").style.display="block";
+  const data = {
+    vorname: formData.get("vorname"),
+    nachname: formData.get("nachname"),
+    strasse: formData.get("strasse"),
+    plz: formData.get("plz"),
+    stadt: formData.get("stadt"),
+    telefon: formData.get("telefon"),
+    id: generateID(),
+    loadTime: loadTime
+  };
 
-const id = generateID();
+  status.innerText = "Wird gesendet...";
 
-/* WICHTIG: FormData statt JSON */
-const formData = new URLSearchParams();
+  try {
+    await fetch(WEBAPP_URL, {
+      method: "POST",
+      body: new URLSearchParams(data)
+    });
 
-formData.append("vorname", document.getElementById("vorname").value);
-formData.append("nachname", document.getElementById("nachname").value);
-formData.append("strasse", document.getElementById("strasse").value);
-formData.append("plz", document.getElementById("plz").value);
-formData.append("stadt", document.getElementById("stadt").value);
-formData.append("telefon", document.getElementById("telefon").value);
-formData.append("id", id);
-formData.append("loadTime", startTime);
+    status.innerText = "Erfolgreich gesendet";
+    this.reset();
 
-fetch(scriptURL, {
-  method: "POST",
-  body: formData
+  } catch (err) {
+    status.innerText = "Fehler beim Senden";
+  }
 });
-
-setTimeout(() => {
-  document.getElementById("loader").style.display="none";
-  document.getElementById("result").style.display="block";
-  document.getElementById("kundenId").innerText = id;
-}, 1000);
-
-});
-
 </script>
 
 </body>
