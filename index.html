@@ -117,7 +117,6 @@ button {
 <input type="text" id="stadt" placeholder="Stadt" required>
 <input type="text" id="telefon" placeholder="Telefon (optional)">
 
-<!-- Honeypot -->
 <input type="text" id="website" style="display:none">
 
 <label>
@@ -137,7 +136,6 @@ Keine Weitergabe. Kein Verkauf. Deine Daten dienen ausschließlich deinem Goldsp
 <div id="loader" class="card">
 <div class="spinner"></div>
 <p>Verarbeitung läuft...</p>
-<p class="highlight">Du wirst gleich zur Zahlungsübersicht weitergeleitet</p>
 </div>
 
 <div id="result" style="display:none;">
@@ -147,52 +145,22 @@ Keine Weitergabe. Kein Verkauf. Deine Daten dienen ausschließlich deinem Goldsp
 <div class="idBox" id="kundenId"></div>
 </div>
 
-<div class="card">
-<h2>So richtest du deine Zahlung ein</h2>
-<p>
-1. Banking-App öffnen<br>
-2. Überweisung oder Dauerauftrag auswählen<br>
-3. IBAN kopieren und einfügen<br>
-4. Empfänger kopieren und einfügen<br>
-5. ID als Verwendungszweck eintragen
-</p>
-</div>
-
-<div class="card">
-<h2>Überweisungsdaten</h2>
-
-<p><strong>IBAN</strong></p>
-<p id="iban">HU94120111480189343900200001</p>
-<button class="copyBtn" onclick="copyIBAN()">IBAN kopieren</button>
-
-<p><strong>Empfänger</strong></p>
-<p id="empfaenger">M&M Marketing Kft</p>
-<button class="copyBtn" onclick="copyEmpfaenger()">Empfänger kopieren</button>
-
-<p><strong>Verwendungszweck</strong></p>
-<p id="vwz"></p>
-<button class="copyBtn" onclick="copyID()">ID kopieren</button>
-
-<p>Betrag frei wählbar</p>
-</div>
-
 </div>
 
 </div>
 
 <script>
 
-const scriptURL = "https://script.google.com/macros/s/AKfycbx19uJ3Mjn_vWVvW8oG1PA7oG56kc_wIPAsgBszebEo7uoT2T5C_xXK5S3OtLEKttE3VQ/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycby5e18FM1qNU8NxmIluWY82Tjv4TcUNJQd4JsLD1E9s8Ehq_KlxEacXytfYYZyBzkWK/exec";
 
 let isSubmitting = false;
 const startTime = Date.now();
 
-/* Neue ID: MMSS + Zufallszahl */
 function generateID() {
   const d = new Date();
   const MM = String(d.getMinutes()).padStart(2,'0');
   const SS = String(d.getSeconds()).padStart(2,'0');
-  const rand = Math.floor(Math.random() * 90 + 10); // 2-stellig
+  const rand = Math.floor(Math.random() * 90 + 10);
   return MM + SS + rand;
 }
 
@@ -207,8 +175,7 @@ if(document.getElementById("website").value){
 }
 
 /* Zeitprüfung */
-const now = Date.now();
-if(now - startTime < 3000){
+if(Date.now() - startTime < 3000){
   alert("Bitte Formular normal ausfüllen");
   return;
 }
@@ -220,54 +187,30 @@ document.getElementById("loader").style.display="block";
 
 const id = generateID();
 
-const data = {
-  vorname: document.getElementById("vorname").value,
-  nachname: document.getElementById("nachname").value,
-  strasse: document.getElementById("strasse").value,
-  plz: document.getElementById("plz").value,
-  stadt: document.getElementById("stadt").value,
-  telefon: document.getElementById("telefon").value,
-  id: id,
-  loadTime: startTime
-};
+/* WICHTIG: FormData statt JSON */
+const formData = new URLSearchParams();
+
+formData.append("vorname", document.getElementById("vorname").value);
+formData.append("nachname", document.getElementById("nachname").value);
+formData.append("strasse", document.getElementById("strasse").value);
+formData.append("plz", document.getElementById("plz").value);
+formData.append("stadt", document.getElementById("stadt").value);
+formData.append("telefon", document.getElementById("telefon").value);
+formData.append("id", id);
+formData.append("loadTime", startTime);
 
 fetch(scriptURL, {
   method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(data)
-})
-.then(res => res.json())
-.then(res => {
-  console.log(res);
-})
-.catch(err => {
-  console.error(err);
+  body: formData
 });
 
 setTimeout(() => {
   document.getElementById("loader").style.display="none";
   document.getElementById("result").style.display="block";
-
   document.getElementById("kundenId").innerText = id;
-  document.getElementById("vwz").innerText = id;
-
 }, 1000);
 
 });
-
-function copyIBAN(){
-navigator.clipboard.writeText(document.getElementById("iban").innerText);
-}
-
-function copyEmpfaenger(){
-navigator.clipboard.writeText(document.getElementById("empfaenger").innerText);
-}
-
-function copyID(){
-navigator.clipboard.writeText(document.getElementById("vwz").innerText);
-}
 
 </script>
 
