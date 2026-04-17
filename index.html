@@ -23,6 +23,17 @@ body {
   max-width: 400px;
 }
 
+h2 {
+  margin-bottom: 10px;
+}
+
+.top-text {
+  font-size: 14px;
+  color: #cbd5f5;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
 input {
   width: 100%;
   padding: 10px;
@@ -62,6 +73,12 @@ button:hover {
 
 <div class="container">
   <h2>Gold Sparplan starten</h2>
+
+  <!-- TEXT OBEN (wieder drin) -->
+  <div class="top-text">
+    Sichere dein Vermögen außerhalb des Systems.  
+    Starte jetzt deinen persönlichen Goldsparplan.
+  </div>
 
   <form id="form">
 
@@ -105,7 +122,6 @@ document.getElementById("form").addEventListener("submit", async function(e) {
 
   const status = document.getElementById("status");
 
-  // Frontend Rate Limit
   const now = Date.now();
   if (now - lastSubmit < 5000) {
     status.innerText = "Bitte kurz warten...";
@@ -115,7 +131,7 @@ document.getElementById("form").addEventListener("submit", async function(e) {
 
   const formData = new FormData(this);
 
-  // Honeypot check
+  // Honeypot
   if (formData.get("website")) {
     status.innerText = "Fehler";
     return;
@@ -135,16 +151,24 @@ document.getElementById("form").addEventListener("submit", async function(e) {
   status.innerText = "Wird gesendet...";
 
   try {
-    await fetch(WEBAPP_URL, {
+    const res = await fetch(WEBAPP_URL, {
       method: "POST",
       body: new URLSearchParams(data)
     });
 
-    status.innerText = "Erfolgreich gesendet";
-    this.reset();
+    const text = await res.text();
+
+    if (text === "OK") {
+      status.innerText = "Erfolgreich gesendet";
+      this.reset();
+    } else {
+      status.innerText = "Server antwortet nicht korrekt";
+      console.log(text);
+    }
 
   } catch (err) {
-    status.innerText = "Fehler beim Senden";
+    status.innerText = "Verbindung fehlgeschlagen";
+    console.error(err);
   }
 });
 </script>
