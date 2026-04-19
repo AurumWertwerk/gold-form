@@ -1,147 +1,30 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gold Sparplan</title>
-
-<style>
-body {
-  font-family: Arial;
-  background: #0f172a;
-  color: white;
-  display: flex;
-  justify-content: center;
-  padding: 30px;
-}
-
-.container {
-  background: #1e293b;
-  padding: 25px;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 400px;
-}
-
-.top-text {
-  font-size: 14px;
-  color: #cbd5f5;
-  margin-bottom: 20px;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
-  border-radius: 6px;
-  border: none;
-}
-
-button {
-  width: 100%;
-  padding: 12px;
-  background: #facc15;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #eab308;
-}
-
-.small {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-top: 10px;
-}
-
-#status {
-  margin-top: 10px;
-}
-</style>
+  <title>Weiterleitung...</title>
 </head>
-
 <body>
 
-<div class="container">
-  <h2>Gold Sparplan starten</h2>
-
-  <div class="top-text">
-    Sichere dein Vermögen außerhalb des Systems.<br>
-    Starte jetzt deinen persönlichen Goldsparplan.
-  </div>
-
-  <!-- FORM DIREKT AN GOOGLE -->
-  <form id="form" method="POST"
-    action="https://script.google.com/macros/s/AKfycbylRwi9HksNVEtHcOljqc9yHvB52LJfj65v-n4q7jyG0zn-cq4wiUdRDFotBjoh1UuJgw/exec"
-    target="hidden_iframe">
-
-    <input type="text" name="vorname" placeholder="Vorname" required>
-    <input type="text" name="nachname" placeholder="Nachname" required>
-    <input type="text" name="strasse" placeholder="Straße" required>
-    <input type="text" name="plz" placeholder="PLZ" required>
-    <input type="text" name="stadt" placeholder="Stadt" required>
-    <input type="text" name="telefon" placeholder="Telefon" required>
-
-    <!-- Honeypot -->
-    <input type="text" name="website" style="display:none">
-
-    <!-- ID -->
-    <input type="hidden" name="id" id="id">
-
-    <!-- LoadTime -->
-    <input type="hidden" name="loadTime" id="loadTime">
-
-    <!-- Checkbox -->
-    <label style="font-size:12px;">
-      <input type="checkbox" required>
-      Ich bestätige, dass meine Angaben korrekt sind
-    </label>
-
-    <button type="submit">Absenden</button>
-
-  </form>
-
-  <iframe name="hidden_iframe" style="display:none;"></iframe>
-
-  <div id="status"></div>
-
-  <div class="small">
-    Keine Weitergabe. Kein Verkauf. Deine Daten dienen ausschließlich deinem Goldsparplan.
-  </div>
-</div>
-
 <script>
-let lastSubmit = 0;
+const params = new URLSearchParams(window.location.search);
 
-// ID Generator
-function generateID() {
-  const now = new Date();
-  const mm = String(now.getMinutes()).padStart(2, '0');
-  const ss = String(now.getSeconds()).padStart(2, '0');
-  const rand = Math.floor(1000 + Math.random() * 9000);
-  return mm + ss + "-" + rand;
-}
-
-// Set hidden values
-document.getElementById("id").value = generateID();
-document.getElementById("loadTime").value = Date.now();
-
-// Submit Handling
-document.getElementById("form").addEventListener("submit", function(e) {
-  const status = document.getElementById("status");
-
-  const now = Date.now();
-  if (now - lastSubmit < 5000) {
-    e.preventDefault();
-    status.innerText = "Bitte kurz warten...";
-    return;
-  }
-
-  lastSubmit = now;
-  status.innerText = "Gesendet...";
+fetch("https://script.google.com/macros/s/AKfycby9US-MJrBZpTbFcS6LVT9rudJ_y6A-etZACdCH5Pz2mArZifsCA7T28ffS5j59JgK9LQ/exec", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    vorname: params.get("vorname"),
+    nachname: params.get("nachname"),
+    strasse: params.get("strasse"),
+    plz: params.get("plz"),
+    stadt: params.get("stadt"),
+    telefon: params.get("telefon")
+  })
+})
+.then(res => res.json())
+.then(data => {
+  window.location.href = data.redirect;
 });
 </script>
 
