@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Weiterleitung...</title>
+  <title>Verarbeitung...</title>
 </head>
 <body>
 
 <script>
 const params = new URLSearchParams(window.location.search);
 
-fetch("https://script.google.com/macros/s/AKfycby9US-MJrBZpTbFcS6LVT9rudJ_y6A-etZACdCH5Pz2mArZifsCA7T28ffS5j59JgK9LQ/exec", {
+fetch("https://script.google.com/macros/s/AKfycbzcFOnnqYIE6oS6636h6ojVYEFbn4U_GrH687X8BO7QR4EF6M7dfOkRfISc_-u7dq0y4w/exec", {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
@@ -24,7 +24,7 @@ fetch("https://script.google.com/macros/s/AKfycby9US-MJrBZpTbFcS6LVT9rudJ_y6A-et
 })
 .then(res => res.json())
 .then(data => {
-  window.location.href = "https://aurumwertwerk.github.io/GoldForm/danke.html?id=" + data.id;
+  window.location.href = data.redirect;
 });
 </script>
 
