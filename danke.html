@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Danke</title>
+</head>
+<body>
+
+<h2>Deine persönliche ID:</h2>
+<h1 id="id"></h1>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+document.getElementById("id").innerText = params.get("id");
+</script>
+
+</body>
+</html>
