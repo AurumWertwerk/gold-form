@@ -5,6 +5,8 @@
 </head>
 <body>
 
+<p>Daten werden verarbeitet...</p>
+
 <script>
 const params = new URLSearchParams(window.location.search);
 
@@ -19,12 +21,16 @@ fetch("https://script.google.com/macros/s/AKfycbzcFOnnqYIE6oS6636h6ojVYEFbn4U_Gr
     strasse: params.get("strasse"),
     plz: params.get("plz"),
     stadt: params.get("stadt"),
-    telefon: params.get("telefon")
+    telefon: params.get("telefon"),
+    email: params.get("email")
   })
 })
 .then(res => res.json())
 .then(data => {
   window.location.href = data.redirect;
+})
+.catch(err => {
+  document.body.innerHTML = "Fehler bei der Verarbeitung";
 });
 </script>
 
